@@ -25,7 +25,7 @@ public class RegisterEndpoint {
     private TokenController tokenController = new TokenController();
 
     private Gson gson = new Gson();
-
+    private Crypter crypter = new Crypter();
     /**
      *
      * @param token
@@ -36,6 +36,9 @@ public class RegisterEndpoint {
     @POST
     @Produces("Application/json")
     public Response register(@HeaderParam("Authorization") String token, String jsonStudent) throws Exception {
+
+        jsonStudent = gson.fromJson(jsonStudent, String.class);
+        jsonStudent = crypter.decrypt(jsonStudent);
 
         CurrentStudentContext student = tokenController.getStudentFromTokens(token);
         Student currentStudent = student.getCurrentStudent();
@@ -75,13 +78,13 @@ public class RegisterEndpoint {
                 studentTable.addStudent(registerStudent);
 
                 String json = new Gson().toJson(registerStudent);
-                String crypted = Crypter.encryptDecrypt(json);
+
 
                 Log.writeLog(getClass().getName(), this, registerStudent + " registered", 0);
                 return Response
                         .status(200)
                         .type("application/json")
-                        .entity(new Gson().toJson(crypted))
+                        .entity(Crypter.encrypt(json))
                         .build();
 
             } catch (SQLException e) {

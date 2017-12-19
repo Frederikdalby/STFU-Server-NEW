@@ -56,12 +56,12 @@ public class StudentEndpoint {
                             .build();
                 } else {
                     String json = new Gson().toJson(foundAttendingEvents);
-                    String crypted = Crypter.encryptDecrypt(json);
+
                     Log.writeLog(getClass().getName(), this, "Attending events fetched", 0);
                     return Response
                             .status(200)
                             .type("application/json")
-                            .entity(new Gson().toJson(crypted))
+                            .entity(Crypter.encrypt(json))
                             .build();
                 }
             }
@@ -123,12 +123,12 @@ public class StudentEndpoint {
         Student currentStudent = student.getCurrentStudent();
         if (currentStudent != null) {
             String json = new Gson().toJson(currentStudent);
-            String crypted = Crypter.encryptDecrypt(json);
+
             Log.writeLog(getClass().getName(), this, "Current student found: " + currentStudent, 0);
             return Response
                     .status(200)
                     .type("application/json")
-                    .entity(new Gson().toJson(crypted))
+                    .entity(Crypter.encrypt(json))
                     .build();
         } else {
             Log.writeLog(getClass().getName(), this, "Current student not found - 403", 2);
